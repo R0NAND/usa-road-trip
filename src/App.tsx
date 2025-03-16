@@ -2,18 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { PhotoData } from "./types/PhotoData";
 import photosJson from "./photo-data.json";
-import {
-  MapContainer,
-  Marker,
-  TileLayer,
-  useMapEvents,
-  Polyline,
-} from "react-leaflet";
+import { MapContainer, Marker, TileLayer, Polyline } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { Gallery } from "react-grid-gallery";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
-import L, { Layer, Polyline as LeafletPolyline } from "leaflet";
+import L from "leaflet";
 import Car from "./assets/car.svg?react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -102,9 +96,8 @@ function App() {
     "Exiting_Through_Detroit",
   ];
 
-  const [count, setCount] = useState(0);
-  const [photos, setPhotos] = useState(photosJson as PhotoData[]);
-  const [locations, setLocations] = useState(
+  const [photos] = useState(photosJson as PhotoData[]);
+  const [locations] = useState(
     location_order.map((loc) => {
       const longitude =
         photos
@@ -157,7 +150,7 @@ function App() {
     loc_index: number,
     photo_index: number
   ) => {
-    const newGalleryIndices = galleryIndices.map((gal_index, gal_loc_index) => {
+    const newGalleryIndices = galleryIndices.map((gal_loc_index) => {
       if (gal_loc_index === loc_index) {
         return photo_index;
       } else {
