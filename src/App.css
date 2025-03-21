@@ -1,8 +1,11 @@
-#root {
-  width: 100%;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.app-container {
+  display: flex;
+}
+
+@media (max-aspect-ratio: 3/2) {
+  .app-container {
+    flex-direction: column;
+  }
 }
 
 .custom-marker {
@@ -22,4 +25,56 @@
   border-radius: 50%;
   transform: translateX(-50%);
   border: 2px solid white;
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.custom-button {
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.caption-overlay {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 5px;
+  background-color: none;
+}
+
+.fly-button {
+  border: none;
+  background: none;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.ReactGridGallery_tile {
+  border-radius: 15px; /* Adjust as needed */
+  overflow: hidden; /* Ensures the rounded corners are applied */
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2); /* Soft shadow */
+  border-radius: 15px; /* Keeps rounded corners */
+  overflow: hidden; /* Ensures the image follows the border-radius */
+  transition: box-shadow 0.3s ease-in-out; /* Smooth transition on hover */
+}
+
+.ReactGridGallery_tile:hover {
+  box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow on hover */
 }

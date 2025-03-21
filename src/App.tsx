@@ -2,7 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { PhotoData } from "./types/PhotoData";
 import photosJson from "./photo-data.json";
-import { MapContainer, Marker, TileLayer, Polyline } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  Polyline,
+  Popup,
+} from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { Gallery } from "react-grid-gallery";
 import Lightbox from "yet-another-react-lightbox";
@@ -10,6 +16,8 @@ import "yet-another-react-lightbox/styles.css";
 import L from "leaflet";
 import Car from "./assets/car.svg?react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocation } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [map, setMap] = useState<L.Map | null>(null);
@@ -150,7 +158,7 @@ function App() {
     loc_index: number,
     photo_index: number
   ) => {
-    const newGalleryIndices = galleryIndices.map((gal_loc_index) => {
+    const newGalleryIndices = galleryIndices.map((_gal, gal_loc_index) => {
       if (gal_loc_index === loc_index) {
         return photo_index;
       } else {
@@ -161,7 +169,7 @@ function App() {
     setGalleryIndices(newGalleryIndices);
   };
 
-  const [zoom, setZoom] = useState(8);
+  const [zoom, setZoom] = useState(4);
   useEffect(() => {
     if (map) {
       console.log("foo");
@@ -183,83 +191,84 @@ function App() {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          height: "100vh",
-        }}
-      >
-        <div style={{ width: "50%", textAlign: "left", overflowY: "scroll" }}>
+      <div className="app-container bg-stone-200 text-black w-full h-screen min-h-500px">
+        <div className="flex-1 text-center overflow-y-scroll p-2">
           {locations.map((loc, loc_index) => {
             return (
               <>
-                <h2>{loc.name.replace("_", " ")}</h2>
-                <div
-                  ref={(el: HTMLDivElement) => {
-                    galleries.current[loc.name] = el;
-                  }}
-                >
-                  <Gallery
-                    images={photos
-                      .filter((photo) => photo.location === loc.name)
-                      .map((photo, photo_index) => ({
-                        src: `${photo.root_url}w_200,q_80/${photo.id}.jpg`,
-                        width: 100,
-                        height: (100 * photo.height) / photo.width,
-                        customOverlay: (
-                          <div
-                            onMouseEnter={() =>
-                              map?.flyTo(
-                                [photo.latitude, photo.longitude],
-                                13,
-                                { animate: true }
-                              )
-                            }
-                            onClick={() => {
-                              handleGalleryThumbnailClick(
-                                loc_index,
-                                photo_index
-                              );
-                            }}
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              backgroundColor: "rgba(0,0,0,0.1)", // Optional overlay styling
-                              pointerEvents: "auto", // Ensure the event gets picked up
-                            }}
-                          />
-                        ),
-                      }))}
-                    enableImageSelection={false}
-                  />
-                  <Lightbox
-                    slides={photos
-                      .filter((photo) => photo.location === loc.name)
-                      .map((photo) => ({
-                        src: `${photo.root_url}${photo.id}.jpg`,
-                        caption: photo.description,
-                      }))}
-                    open={galleryIndices[loc_index] >= 0}
-                    index={galleryIndices[loc_index]}
-                    close={() =>
-                      setGalleryIndices(
-                        galleryIndices.map(() => {
-                          return -1;
-                        })
-                      )
-                    }
-                  />
+                <div className="bg-stone-50 p-2 m-4 rounded-4xl shadow-2xl">
+                  <h2 className="text-4xl mb-2 font-bold">
+                    {loc.name.replace("_", " ")}
+                  </h2>
+                  <div
+                    ref={(el: HTMLDivElement) => {
+                      galleries.current[loc.name] = el;
+                    }}
+                  >
+                    <Gallery
+                      images={photos
+                        .filter((photo) => photo.location === loc.name)
+                        .map((photo) => ({
+                          src: `${photo.root_url}w_200,q_80/${photo.id}.jpg`,
+                          width: 100,
+                          height: (100 * photo.height) / photo.width,
+                          thumbnailStyle: { borderRadius: "30px" },
+                          thumbnailCaption: (
+                            <div className="caption-overlay">
+                              <button
+                                className="fly-button"
+                                onClick={() => {
+                                  console.log("ayo");
+                                  map?.flyTo(
+                                    [photo.latitude, photo.longitude],
+                                    13,
+                                    { animate: true }
+                                  );
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faLocation}
+                                ></FontAwesomeIcon>
+                              </button>
+                            </div>
+                          ),
+                        }))}
+                      onClick={(photo_index) => {
+                        handleGalleryThumbnailClick(loc_index, photo_index);
+                      }}
+                      enableImageSelection={false}
+                    />
+                    <Lightbox
+                      slides={photos
+                        .filter((photo) => photo.location === loc.name)
+                        .map((photo) => ({
+                          src: `${photo.root_url}${photo.id}.jpg`,
+                          caption: photo.description,
+                        }))}
+                      open={galleryIndices[loc_index] >= 0}
+                      index={galleryIndices[loc_index]}
+                      close={() =>
+                        setGalleryIndices(
+                          galleryIndices.map(() => {
+                            return -1;
+                          })
+                        )
+                      }
+                    />
+                  </div>
                 </div>
               </>
             );
           })}
         </div>
-        <div style={{ height: "100%", width: "50%", border: "1px solid red" }}>
+        <div className="flex-1">
           <MapContainer
+            minZoom={4}
+            maxBounds={[
+              [24.396308, -125.0], // Southwest corner
+              [49.384358, -66.93457], // Northeast corner
+            ]}
+            maxBoundsViscosity={1.0} // Prevents panning outside the bounds
             ref={setMap}
             center={[35, -100]}
             zoom={3}
@@ -275,44 +284,49 @@ function App() {
               url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
               attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
             />
-            {zoom <= 8 ? (
-              <>
-                {locations.map((loc, i) => (
-                  <Marker
-                    key={loc.name}
-                    icon={L.divIcon({
-                      className: "car-icon",
-                      html: renderToStaticMarkup(
-                        <Car
-                          style={{
-                            transform: `rotate(${getLocationAngle(i)}rad)`,
-                          }}
-                          height={50}
-                          width={50}
-                        ></Car>
-                      ),
-                      iconSize: [50, 50], // Width and height of the icon
-                      iconAnchor: [25, 25],
-                    })}
-                    position={[loc.latitude, loc.longitude]}
-                  ></Marker>
-                ))}
-                {
-                  <Polyline
-                    pathOptions={{
-                      color: "yellow",
-                      weight: 4, // Line thickness
-                      dashArray: "10, 10", // 10px dash, 10px gap
-                      opacity: 0.8,
-                    }}
-                    positions={locations.map((loc) => [
-                      loc.latitude,
-                      loc.longitude,
-                    ])}
-                  />
-                }
-              </>
-            ) : (
+            <Polyline
+              pathOptions={{
+                color: "grey",
+                weight: 8, // Line thickness
+                // dashArray: "10, 10", // 10px dash, 10px gap
+                opacity: 0.8,
+              }}
+              positions={locations.map((loc) => [loc.latitude, loc.longitude])}
+            />
+            <Polyline
+              pathOptions={{
+                color: "yellow",
+                weight: 2, // Line thickness
+                dashArray: "10, 10", // 10px dash, 10px gap
+                opacity: 0.8,
+              }}
+              positions={locations.map((loc) => [loc.latitude, loc.longitude])}
+            />
+            {zoom < 8 &&
+              zoom >= 6 &&
+              locations.map((loc, i) => (
+                <Marker
+                  key={loc.name}
+                  icon={L.divIcon({
+                    className: "car-icon",
+                    html: renderToStaticMarkup(
+                      <Car
+                        style={{
+                          transform: `rotate(${getLocationAngle(i)}rad)`,
+                        }}
+                        height={50}
+                        width={50}
+                      ></Car>
+                    ),
+                    iconSize: [50, 50], // Width and height of the icon
+                    iconAnchor: [25, 25],
+                  })}
+                  position={[loc.latitude, loc.longitude]}
+                >
+                  <Popup>{loc.name}</Popup>
+                </Marker>
+              ))}
+            {zoom >= 8 && (
               <MarkerClusterGroup maxClusterRadius={1}>
                 {photos.map((photo) => (
                   <Marker
