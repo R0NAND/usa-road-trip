@@ -18,10 +18,9 @@
 
 .caption-overlay {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 0px;
+  right: 0px;
   padding: 5px;
-  background-color: none;
 }
 
 .fly-button {
@@ -51,7 +50,8 @@
 }
 
 .gutter {
-  background-color: #ccc; /* Light gray */
+  background-color: var(--color-zinc-900); /* Light gray */
+  border-bottom: 1px solid #888;
   position: relative;
 }
 

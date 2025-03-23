@@ -22,6 +22,7 @@ const PhotoMarker = ({ photo, onClick }: Props) => {
 
   useEffect(() => {
     if (isSelected) {
+      console.log("got selected!");
       const deselect = () => {
         setIsSelected(false);
       };
@@ -40,7 +41,8 @@ const PhotoMarker = ({ photo, onClick }: Props) => {
           : `${photo.root_url}w_40,h_40,c_fill,q_80/${photo.id}.jpg`
       )}
       eventHandlers={{
-        click: () => {
+        click: (e) => {
+          e.originalEvent.preventDefault;
           if (!isSelected) {
             setIsSelected(true);
           }

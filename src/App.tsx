@@ -23,6 +23,13 @@ import Split from "react-split";
 
 function App() {
   const [map, setMap] = useState<L.Map | null>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      map?.invalidateSize(); // Force Leaflet to update
+    }, 200); // Small delay to allow rendering
+  }, [map]);
+
   const location_order = [
     "Entering_Detroit",
     "Ann_Arbor",
@@ -167,14 +174,12 @@ function App() {
         return -1;
       }
     });
-    console.log(newGalleryIndices);
     setGalleryIndices(newGalleryIndices);
   };
 
   const [zoom, setZoom] = useState(4);
   useEffect(() => {
     if (map) {
-      console.log("foo");
       map.on("zoomend", () => {
         setZoom(map.getZoom());
       });
@@ -187,8 +192,6 @@ function App() {
 
   useEffect(() => {
     const handleResize = () => {
-      console.log(window.innerHeight);
-      console.log(window.innerWidth);
       setIsPortrait(window.innerHeight > window.innerWidth);
     };
     window.addEventListener("resize", handleResize);
@@ -251,10 +254,9 @@ function App() {
                             <button
                               className="fly-button"
                               onClick={() => {
-                                console.log("ayo");
                                 map?.flyTo(
                                   [photo.latitude, photo.longitude],
-                                  13,
+                                  15,
                                   { animate: true }
                                 );
                               }}
