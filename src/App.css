@@ -1,32 +1,3 @@
-.app-container {
-  display: flex;
-}
-
-@media (max-aspect-ratio: 3/2) {
-  .app-container {
-    flex-direction: column;
-  }
-}
-
-.custom-marker {
-  position: relative;
-  width: 40px;
-  height: 50px;
-  background-image: url("/marker-icon.png"); /* Path to the default marker */
-  background-size: cover;
-}
-
-.custom-marker img {
-  position: absolute;
-  left: 50%;
-  top: 6px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  border: 2px solid white;
-}
-
 .image-overlay {
   position: absolute;
   bottom: 10px;
@@ -77,4 +48,39 @@
 
 .ReactGridGallery_tile:hover {
   box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow on hover */
+}
+
+.gutter {
+  background-color: #ccc; /* Light gray */
+  position: relative;
+}
+
+.gutter.horizontal {
+  cursor: ew-resize; /* Horizontal drag cursor */
+  width: 12px;
+}
+
+.gutter.vertical {
+  cursor: ns-resize; /* Vertical drag cursor */
+  height: 12px;
+}
+
+.gutter::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #888; /* Darker handle */
+  border-radius: 3px;
+}
+
+.gutter.horizontal::before {
+  width: 6px;
+  height: 40px;
+}
+
+.gutter.vertical::before {
+  width: 40px;
+  height: 6px;
 }
