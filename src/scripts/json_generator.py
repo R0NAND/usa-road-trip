@@ -17,6 +17,8 @@ import csv
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 
+from datetime import datetime
+
 def get_exif_data(image):
     exif_data = {}
     info = image._getexif()
@@ -186,39 +188,10 @@ if __name__ == '__main__':
         "description": caption,
         "longitude": float(asset['metadata']['longitude']),
         "latitude": float(asset['metadata']['latitude']),
-        "timestamp": asset['metadata']['timestamp']
+        "timestamp": datetime.strptime(asset['metadata']['timestamp'], "%Y:%m:%d %H:%M:%S").isoformat()
         }
       photo_data.append(pd)
     with open('src/photo-data.json', 'w') as file:
         json.dump(photo_data, file, indent=4)
   print("succesfully completed!")
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # directory = "C:/Users/rodaw/OneDrive/Desktop/USA_Photos"  # Replace with your directory
-    # output_file = 'output.csv'
-    # output_html = ''
-    # failures = ''
-    # for root in os.listdir(directory):
-    #     if(os.path.isdir(os.path.join(directory, root))):
-    #         failures += process_directory(os.path.join(directory, root))
-    #         # output_html += output_gallery_string(os.path.join(directory, root))
-    # # output_html += '<script src="gallery_code.js"></script>'
-    # print(failures)
-    # # write_to_csv(output_file, output_data)
-    # # print(f'Data written to {output_file}')
-    # # f = open("galleries.html", "w")
-    # # f.write(output_html)
-    # # f.close()
