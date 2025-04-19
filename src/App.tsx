@@ -69,26 +69,38 @@ function App() {
   }, [photos]);
 
   const getLocationAngle = (i: number): number => {
-    let angles: number[] = [];
+    interface Vec2 {
+      x: number;
+      y: number;
+    }
+    function normalize(vec: Vec2) {
+      const len = Math.hypot(vec.x, vec.y);
+      return len === 0 ? { x: 0, y: 0 } : { x: vec.x / len, y: vec.y / len };
+    }
+    let vecs: Vec2[] = [];
     if (i < locations.length - 1) {
-      angles.push(
-        3.14159 +
-          Math.atan2(
-            locations[i].latitude - locations[i + 1].latitude,
-            locations[i + 1].longitude - locations[i].longitude
-          )
+      vecs.push(
+        normalize({
+          x: locations[i + 1].longitude - locations[i].longitude,
+          y: locations[i + 1].latitude - locations[i].latitude,
+        })
       );
     }
     if (i > 0) {
-      angles.push(
-        3.14159 +
-          Math.atan2(
-            locations[i - 1].latitude - locations[i].latitude,
-            locations[i].longitude - locations[i - 1].longitude
-          )
+      vecs.push(
+        normalize({
+          x: locations[i].longitude - locations[i - 1].longitude,
+          y: locations[i].latitude - locations[i - 1].latitude,
+        })
       );
     }
-    return angles.reduce((a, b) => a + b, 0) / angles.length;
+    const tangent: Vec2 = normalize(
+      vecs.reduce((acc, v) => ({ x: acc.x - v.x, y: acc.y + v.y }), {
+        x: 0,
+        y: 0,
+      })
+    );
+    return Math.atan2(tangent.y, tangent.x);
   };
   const [galleryIndices, setGalleryIndices] = useState<number[]>(
     locations.map(() => -1)
@@ -253,7 +265,7 @@ function App() {
           minZoom={4}
           maxBounds={[
             [24.396308, -125.0], // Southwest corner
-            [49.384358, -66.93457], // Northeast corner
+            [53.0, -66.93457], // Northeast corner
           ]}
           maxBoundsViscosity={1.0} // Prevents panning outside the bounds
           ref={setMap}
